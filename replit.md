@@ -54,6 +54,7 @@ The application follows a simple client-server architecture:
 - **Telegram Bot API**: For bot communication and user interface
 - **Google Sheets API**: For data storage and retrieval
 - **Google Drive API**: Required scope for Sheets access
+- **Flask Web API**: Exposed on port 8080 for external application integration
 
 ## Deployment Strategy
 
@@ -75,6 +76,7 @@ The application is configured for Replit deployment:
 - Language: Spanish
 - Uses existing Google Sheet named "Gastos" with columns: FECHA DEL GASTO, PRODUCTO, LUGAR, CATEGORIA, SUB CATEGORIA, IMPORTE, CANTIDAD
 - Service account email for sheet sharing: gastos-bot@bottelegramgastos-463810.iam.gserviceaccount.com
+- Requires web API for external application integration
 
 ## Recent Changes
 
@@ -87,10 +89,12 @@ The application is configured for Replit deployment:
 - June 25, 2025: Changed message format to 6 lines: Producto, Lugar, Categoría, Subcategoría, Importe, Cantidad
 - June 25, 2025: Successfully connected to user's existing "Gastos" Google Sheet
 - June 25, 2025: Finalized 6-line format including LUGAR column, tested and verified working
+- June 25, 2025: Added Flask web API for external applications to interact with bot
+- June 25, 2025: Created endpoints: /status, /add_expense, /help for web integrations
 
 ## Status
 
-Bot funcional en español, conectado a hoja "Gastos" existente, formato 6 líneas implementado y probado.
+Bot funcional en español, conectado a hoja "Gastos" existente, formato 6 líneas implementado y probado. API web agregada para permitir consultas externas.
 
 ## Changelog
 

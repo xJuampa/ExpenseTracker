@@ -8,7 +8,7 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackContext
-from keep_alive import keep_alive
+from keep_alive import keep_alive, set_bot_instance
 
 # Configure logging
 logging.basicConfig(
@@ -309,6 +309,9 @@ def main():
         # The bot will handle the error when users try to log expenses
         expense_bot._get_or_create_sheet()
         
+        # Set bot instance for API access
+        set_bot_instance(expense_bot)
+        
         if getattr(expense_bot, 'quota_exceeded', False):
             logger.warning("Google Drive quota exceeded. Bot will start but users need to free up space or create 'Gastos' sheet manually.")
         elif not expense_bot.sheet:
@@ -327,6 +330,7 @@ def main():
         
         # Start the bot
         logger.info("Iniciando Bot de Gastos...")
+        logger.info("API Web disponible en puerto 8080")
         application.run_polling(allowed_updates=Update.ALL_TYPES)
         
     except Exception as e:

@@ -24,4 +24,29 @@ Productos básicos
 
 El bot registra automáticamente la fecha en tu hoja.
 
-Comandos: /start y /help para instrucciones.
+## API Web disponible:
+Tu bot ahora expone una API en el puerto 8080 que permite a otras aplicaciones web agregar gastos directamente.
+
+**Endpoint principal:**
+```
+POST /add_expense
+Content-Type: application/json
+```
+
+Ejemplo de uso desde otra aplicación:
+```javascript
+fetch('https://tu-url.replit.app/add_expense', {
+  method: 'POST',
+  headers: {'Content-Type': 'application/json'},
+  body: JSON.stringify({
+    producto: "Almuerzo",
+    lugar: "Restaurante", 
+    categoria: "Comida",
+    subcategoria: "Almuerzo",
+    importe: "12000",
+    cantidad: "1"
+  })
+})
+```
+
+Ver archivo `api_examples.md` para más detalles.
