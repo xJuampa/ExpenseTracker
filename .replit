@@ -15,10 +15,6 @@ author = "agent"
 task = "workflow.run"
 args = "Expense Bot"
 
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "expense_bot_workflow"
-
 [[workflows.workflow]]
 name = "Expense Bot"
 author = "agent"
@@ -26,11 +22,3 @@ author = "agent"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "python expense_bot.py"
-
-[[workflows.workflow]]
-name = "expense_bot_workflow"
-author = "agent"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "pip install python-telegram-bot gspread oauth2client && python expense_bot.py"

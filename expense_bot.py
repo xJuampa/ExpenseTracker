@@ -61,7 +61,7 @@ class ExpenseBot:
             logger.error(f"Failed to setup Google Sheets: {e}")
             raise
     
-    def _get_or_create_sheet(self, sheet_name: str = "Expenses"):
+    def _get_or_create_sheet(self, sheet_name: str = "Gastos"):
         """Get existing sheet or create a new one with headers."""
         try:
             # Try to open existing spreadsheet first
@@ -71,7 +71,21 @@ class ExpenseBot:
                 logger.info(f"Opened existing spreadsheet: {sheet_name}")
                 return True
             except gspread.SpreadsheetNotFound:
-                logger.info(f"Spreadsheet '{sheet_name}' not found, will try to create it")
+                logger.info(f"Spreadsheet '{sheet_name}' not found, trying alternative methods...")
+                
+                # Try to find sheet by searching all available sheets
+                try:
+                    all_sheets = self.gc.openall()
+                    for sheet in all_sheets:
+                        if "gasto" in sheet.title.lower():
+                            spreadsheet = sheet
+                            self.sheet = spreadsheet.sheet1
+                            logger.info(f"Found sheet with 'gasto' in name: {sheet.title}")
+                            return True
+                except Exception as e:
+                    logger.warning(f"Could not search through sheets: {e}")
+                
+                logger.info(f"Will try to create new spreadsheet: {sheet_name}")
             
             # Try to create new spreadsheet if it doesn't exist
             try:
@@ -79,7 +93,7 @@ class ExpenseBot:
                 self.sheet = spreadsheet.sheet1
                 
                 # Add headers
-                headers = ["Date", "Product", "Category", "Subcategory", "Amount", "Quantity"]
+                headers = ["FECHA DEL GASTO", "PRODUCTO", "LUGAR", "CATEGORIA", "SUB CATEGORIA", "IMPORTE", "CANTIDAD"]
                 self.sheet.append_row(headers)
                 
                 logger.info(f"Created new spreadsheet with headers: {sheet_name}")
@@ -109,10 +123,10 @@ class ExpenseBot:
         try:
             # Extract data from lines
             product = lines[0]
-            category = lines[1]
-            subcategory = lines[2]
-            amount = float(lines[3])  # Validate amount is numeric
-            quantity = int(lines[4])  # Validate quantity is integer
+            place = lines[1]  # This is LUGAR (place/location)
+            category = lines[2]
+            subcategory = lines[3]
+            amount = float(lines[4])  # Validate amount is numeric
             
             # Add current date
             current_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -120,10 +134,11 @@ class ExpenseBot:
             return {
                 "date": current_date,
                 "product": product,
+                "place": place,
                 "category": category,
                 "subcategory": subcategory,
                 "amount": amount,
-                "quantity": quantity
+                "quantity": 1  # Default quantity to 1
             }
             
         except (ValueError, IndexError) as e:
@@ -138,10 +153,11 @@ class ExpenseBot:
                 if not self._get_or_create_sheet():
                     return False
             
-            # Prepare row data
+            # Prepare row data matching your sheet structure
             row_data = [
                 expense_data["date"],
                 expense_data["product"],
+                expense_data["place"],
                 expense_data["category"],
                 expense_data["subcategory"],
                 expense_data["amount"],
@@ -164,49 +180,49 @@ expense_bot = ExpenseBot()
 async def start(update: Update, context: CallbackContext) -> None:
     """Send a message when the command /start is issued."""
     welcome_message = """
-Welcome to the Expense Tracker Bot! 📊
+¡Bienvenido al Bot de Gastos! 💰
 
-Send me your expenses in this format (each item on a new line):
+Envíame tus gastos en este formato (cada elemento en una línea nueva):
 
-Product
-Category  
-Subcategory
-Amount
-Quantity
+Producto
+Lugar
+Categoría
+Subcategoría
+Importe
 
-Example:
+Ejemplo:
 Harina
-comida
-panaderia
+Panadería
+Comida
+Productos básicos
 1200
-2
 
-I'll automatically log it to your Google Sheet with the current date and time.
+Lo registraré automáticamente en tu hoja de Google con la fecha y hora actual.
     """
     await update.message.reply_text(welcome_message)
 
 async def help_command(update: Update, context: CallbackContext) -> None:
     """Send a message when the command /help is issued."""
     help_message = """
-📋 How to use this bot:
+📋 Cómo usar este bot:
 
-1. Send me a message with your expense details in exactly 5 lines:
-   Line 1: Product name
-   Line 2: Category
-   Line 3: Subcategory  
-   Line 4: Amount (number)
-   Line 5: Quantity (whole number)
+1. Envíame un mensaje con los detalles de tu gasto en exactamente 5 líneas:
+   Línea 1: Nombre del producto
+   Línea 2: Lugar de compra
+   Línea 3: Categoría
+   Línea 4: Subcategoría  
+   Línea 5: Importe (número)
 
-2. I'll automatically add the current date and save it to your Google Sheet.
+2. Automáticamente agregaré la fecha actual y lo guardaré en tu hoja de Google.
 
-3. Make sure your message has exactly 5 lines and the amount/quantity are valid numbers.
+3. Asegúrate de que tu mensaje tenga exactamente 5 líneas y que el importe sea un número válido.
 
-Example:
-Bread
-Food
-Bakery
-5.50
-1
+Ejemplo:
+Pan
+Panadería
+Comida
+Productos básicos
+2500
     """
     await update.message.reply_text(help_message)
 
@@ -220,21 +236,21 @@ async def handle_expense_message(update: Update, context: CallbackContext) -> No
         
         if not expense_data:
             error_message = """
-❌ Invalid message format!
+❌ ¡Formato de mensaje inválido!
 
-Please send exactly 5 lines:
-1. Product name
-2. Category
-3. Subcategory
-4. Amount (number)
-5. Quantity (whole number)
+Por favor envía exactamente 5 líneas:
+1. Nombre del producto
+2. Lugar de compra
+3. Categoría
+4. Subcategoría
+5. Importe (número)
 
-Example:
+Ejemplo:
 Harina
-comida
-panaderia
+Panadería
+Comida
+Productos básicos
 1200
-2
             """
             await update.message.reply_text(error_message)
             return
@@ -243,9 +259,9 @@ panaderia
         if not expense_bot.sheet:
             if not expense_bot._get_or_create_sheet():
                 if getattr(expense_bot, 'quota_exceeded', False):
-                    await update.message.reply_text("❌ Google Drive storage quota exceeded. Please free up space in your Google Drive or create a spreadsheet named 'Expenses' manually and try again.")
+                    await update.message.reply_text("❌ Cuota de almacenamiento de Google Drive excedida. Por favor libera espacio en tu Google Drive o crea una hoja llamada 'Gastos' manualmente e inténtalo de nuevo.")
                 else:
-                    await update.message.reply_text("❌ Failed to connect to Google Sheets. Please try again later.")
+                    await update.message.reply_text("❌ Error al conectar con Google Sheets. Por favor inténtalo más tarde.")
                 return
         
         # Log expense to sheet
@@ -253,22 +269,23 @@ panaderia
         
         if success:
             success_message = f"""
-✅ Expense logged successfully!
+✅ ¡Gasto registrado exitosamente!
 
-📅 Date: {expense_data['date']}
-🛍️ Product: {expense_data['product']}
-📂 Category: {expense_data['category']}
-📁 Subcategory: {expense_data['subcategory']}
-💰 Amount: {expense_data['amount']}
-📦 Quantity: {expense_data['quantity']}
+📅 Fecha: {expense_data['date']}
+🛍️ Producto: {expense_data['product']}
+📍 Lugar: {expense_data['place']}
+📂 Categoría: {expense_data['category']}
+📁 Subcategoría: {expense_data['subcategory']}
+💰 Importe: {expense_data['amount']}
+📦 Cantidad: {expense_data['quantity']}
             """
             await update.message.reply_text(success_message)
         else:
-            await update.message.reply_text("❌ Failed to log expense. Please try again later.")
+            await update.message.reply_text("❌ Error al registrar el gasto. Por favor inténtalo más tarde.")
             
     except Exception as e:
         logger.error(f"Error handling expense message: {e}")
-        await update.message.reply_text("❌ An error occurred while processing your expense. Please try again.")
+        await update.message.reply_text("❌ Ocurrió un error al procesar tu gasto. Por favor inténtalo de nuevo.")
 
 async def error_handler(update: Update, context: CallbackContext) -> None:
     """Log errors caused by updates."""
@@ -282,7 +299,7 @@ def main():
         expense_bot._get_or_create_sheet()
         
         if getattr(expense_bot, 'quota_exceeded', False):
-            logger.warning("Google Drive quota exceeded. Bot will start but users need to free up space or create 'Expenses' sheet manually.")
+            logger.warning("Google Drive quota exceeded. Bot will start but users need to free up space or create 'Gastos' sheet manually.")
         elif not expense_bot.sheet:
             logger.warning("Could not setup Google Sheets initially. Bot will try again when users send expenses.")
         
@@ -298,7 +315,7 @@ def main():
         application.add_error_handler(error_handler)
         
         # Start the bot
-        logger.info("Starting Expense Tracker Bot...")
+        logger.info("Iniciando Bot de Gastos...")
         application.run_polling(allowed_updates=Update.ALL_TYPES)
         
     except Exception as e:

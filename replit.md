@@ -79,6 +79,9 @@ Preferred communication style: Simple, everyday language.
 - June 24, 2025: Fixed telegram library version compatibility (downgraded to 20.3)
 - June 24, 2025: Added improved error handling for Google Drive quota issues
 - June 24, 2025: Bot now gracefully handles storage quota exceeded errors and provides helpful user messages
+- June 25, 2025: Updated bot to Spanish language
+- June 25, 2025: Modified to use existing "Gastos" Google Sheet with columns: FECHA DEL GASTO, PRODUCTO, LUGAR, CATEGORIA, SUB CATEGORIA, IMPORTE, CANTIDAD
+- June 25, 2025: Changed message format to 5 lines: Producto, Lugar, Categoría, Subcategoría, Importe
 
 ## Changelog
 
