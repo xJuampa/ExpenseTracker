@@ -71,7 +71,10 @@ The application is configured for Replit deployment:
 
 ## User Preferences
 
-Preferred communication style: Simple, everyday language.
+- Preferred communication style: Simple, everyday language
+- Language: Spanish
+- Uses existing Google Sheet named "Gastos" with columns: FECHA DEL GASTO, PRODUCTO, LUGAR, CATEGORIA, SUB CATEGORIA, IMPORTE, CANTIDAD
+- Service account email for sheet sharing: gastos-bot@bottelegramgastos-463810.iam.gserviceaccount.com
 
 ## Recent Changes
 
