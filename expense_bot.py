@@ -8,6 +8,7 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackContext
+from keep_alive import keep_alive
 
 # Configure logging
 logging.basicConfig(
@@ -301,6 +302,9 @@ async def error_handler(update: Update, context: CallbackContext) -> None:
 def main():
     """Start the bot."""
     try:
+        # Start the keep alive server
+        keep_alive()
+        
         # Try to setup Google Sheets connection, but continue even if it fails
         # The bot will handle the error when users try to log expenses
         expense_bot._get_or_create_sheet()
