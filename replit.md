@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is a Telegram bot application designed to track and manage expenses by integrating with Google Sheets for data storage. The bot allows users to interact via Telegram to record expenses, which are then automatically logged to a Google Sheets spreadsheet for easy tracking and analysis.
+This is a Spanish-language Telegram bot application that tracks and manages expenses by integrating with the user's existing Google Sheets "Gastos" spreadsheet. Users send 6-line messages via Telegram to record expenses, which are automatically logged with timestamps to their Google Sheet for tracking and analysis.
 
 ## System Architecture
 
@@ -84,7 +84,13 @@ The application is configured for Replit deployment:
 - June 24, 2025: Bot now gracefully handles storage quota exceeded errors and provides helpful user messages
 - June 25, 2025: Updated bot to Spanish language
 - June 25, 2025: Modified to use existing "Gastos" Google Sheet with columns: FECHA DEL GASTO, PRODUCTO, LUGAR, CATEGORIA, SUB CATEGORIA, IMPORTE, CANTIDAD
-- June 25, 2025: Changed message format to 5 lines: Producto, Lugar, Categoría, Subcategoría, Importe
+- June 25, 2025: Changed message format to 6 lines: Producto, Lugar, Categoría, Subcategoría, Importe, Cantidad
+- June 25, 2025: Successfully connected to user's existing "Gastos" Google Sheet
+- June 25, 2025: Finalized 6-line format including LUGAR column, tested and verified working
+
+## Status
+
+Bot funcional en español, conectado a hoja "Gastos" existente, formato 6 líneas implementado y probado.
 
 ## Changelog
 

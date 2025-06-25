@@ -116,17 +116,18 @@ class ExpenseBot:
         """Parse expense message and return structured data."""
         lines = [line.strip() for line in message_text.strip().split('\n') if line.strip()]
         
-        # Validate message format (exactly 5 lines)
-        if len(lines) != 5:
+        # Validate message format (exactly 6 lines)
+        if len(lines) != 6:
             return None
         
         try:
             # Extract data from lines
             product = lines[0]
-            place = lines[1]  # This is LUGAR (place/location)
+            place = lines[1]  # LUGAR (place/location)
             category = lines[2]
             subcategory = lines[3]
             amount = float(lines[4])  # Validate amount is numeric
+            quantity = int(lines[5])  # Validate quantity is integer
             
             # Add current date
             current_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -138,7 +139,7 @@ class ExpenseBot:
                 "category": category,
                 "subcategory": subcategory,
                 "amount": amount,
-                "quantity": 1  # Default quantity to 1
+                "quantity": quantity
             }
             
         except (ValueError, IndexError) as e:
@@ -189,6 +190,7 @@ Lugar
 Categoría
 Subcategoría
 Importe
+Cantidad
 
 Ejemplo:
 Harina
@@ -196,6 +198,7 @@ Panadería
 Comida
 Productos básicos
 1200
+2
 
 Lo registraré automáticamente en tu hoja de Google con la fecha y hora actual.
     """
@@ -206,16 +209,17 @@ async def help_command(update: Update, context: CallbackContext) -> None:
     help_message = """
 📋 Cómo usar este bot:
 
-1. Envíame un mensaje con los detalles de tu gasto en exactamente 5 líneas:
+1. Envíame un mensaje con los detalles de tu gasto en exactamente 6 líneas:
    Línea 1: Nombre del producto
    Línea 2: Lugar de compra
    Línea 3: Categoría
    Línea 4: Subcategoría  
    Línea 5: Importe (número)
+   Línea 6: Cantidad (número)
 
 2. Automáticamente agregaré la fecha actual y lo guardaré en tu hoja de Google.
 
-3. Asegúrate de que tu mensaje tenga exactamente 5 líneas y que el importe sea un número válido.
+3. Asegúrate de que tu mensaje tenga exactamente 6 líneas y que el importe y cantidad sean números válidos.
 
 Ejemplo:
 Pan
@@ -223,6 +227,7 @@ Panadería
 Comida
 Productos básicos
 2500
+1
     """
     await update.message.reply_text(help_message)
 
@@ -238,12 +243,13 @@ async def handle_expense_message(update: Update, context: CallbackContext) -> No
             error_message = """
 ❌ ¡Formato de mensaje inválido!
 
-Por favor envía exactamente 5 líneas:
+Por favor envía exactamente 6 líneas:
 1. Nombre del producto
 2. Lugar de compra
 3. Categoría
 4. Subcategoría
 5. Importe (número)
+6. Cantidad (número)
 
 Ejemplo:
 Harina
@@ -251,6 +257,7 @@ Panadería
 Comida
 Productos básicos
 1200
+2
             """
             await update.message.reply_text(error_message)
             return
