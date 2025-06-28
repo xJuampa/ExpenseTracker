@@ -35,7 +35,7 @@ Content-Type: application/json
 
 Ejemplo de uso desde otra aplicación:
 ```javascript
-fetch('https://tu-url.replit.app/add_expense', {
+fetch('https://expensetracker.forkydrive.replit.app/add_expense', {
   method: 'POST',
   headers: {'Content-Type': 'application/json'},
   body: JSON.stringify({

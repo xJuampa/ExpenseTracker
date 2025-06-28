@@ -42,10 +42,10 @@ Respuesta JSON con documentación de la API
 
 ```bash
 # Verificar estado
-curl https://tu-replit-url.replit.app/status
+curl https://expensetracker.forkydrive.replit.app/status
 
 # Agregar gasto
-curl -X POST https://tu-replit-url.replit.app/add_expense \
+curl -X POST https://expensetracker.forkydrive.replit.app/add_expense \
   -H "Content-Type: application/json" \
   -d '{
     "producto": "Café",
@@ -61,7 +61,7 @@ curl -X POST https://tu-replit-url.replit.app/add_expense \
 
 ```javascript
 // Agregar gasto
-fetch('https://tu-replit-url.replit.app/add_expense', {
+fetch('https://expensetracker.forkydrive.replit.app/add_expense', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
