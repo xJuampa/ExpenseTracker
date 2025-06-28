@@ -112,9 +112,13 @@ def set_bot_instance(bot):
     bot_instance = bot
 
 def run():
-    app.run(host='0.0.0.0', port=8080)
+    app.run(host='0.0.0.0', port=8080, debug=False)
 
 def keep_alive():
     t = Thread(target=run)
     t.daemon = True
     t.start()
+
+# For standalone server
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8080, debug=False)
