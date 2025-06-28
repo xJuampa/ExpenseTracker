@@ -50,3 +50,8 @@ fetch('https://expensetracker.forkydrive.replit.app/add_expense', {
 ```
 
 Ver archivo `api_examples.md` para más detalles.
+
+## Para obtener la URL pública:
+1. Haz clic en "Deploy" en Replit
+2. Una vez desplegado, obtendrás la URL pública real
+3. Usa esa URL + "/" para verificar el estado del bot

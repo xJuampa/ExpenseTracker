@@ -91,6 +91,7 @@ The application is configured for Replit deployment:
 - June 25, 2025: Finalized 6-line format including LUGAR column, tested and verified working
 - June 25, 2025: Added Flask web API for external applications to interact with bot
 - June 25, 2025: Created endpoints: /status, /add_expense, /help for web integrations
+- June 28, 2025: Configured for Replit Deployment to obtain public URL access
 
 ## Status
 
