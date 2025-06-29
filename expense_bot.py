@@ -39,6 +39,9 @@ class ExpenseBot:
         """Setup Google Sheets authentication and connection."""
         try:
             # Parse credentials from environment variable
+            if self.google_creds_json is None:
+                raise ValueError("GOOGLE_CREDS is None")
+                
             creds_dict = json.loads(self.google_creds_json)
             
             # Define the scope for Google Sheets API
@@ -65,6 +68,10 @@ class ExpenseBot:
     def _get_or_create_sheet(self, sheet_name: str = "Gastos"):
         """Get existing sheet or create a new one with headers."""
         try:
+            if self.gc is None:
+                logger.error("Google Sheets client not initialized")
+                return False
+                
             # Try to open existing spreadsheet first
             try:
                 spreadsheet = self.gc.open(sheet_name)
@@ -154,6 +161,10 @@ class ExpenseBot:
             if not self.sheet:
                 if not self._get_or_create_sheet():
                     return False
+            
+            if self.sheet is None:
+                logger.error("Sheet is not available")
+                return False
             
             # Prepare row data matching your sheet structure
             row_data = [

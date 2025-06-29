@@ -1,1 +1,1 @@
-web: gunicorn keep_alive:app
+web: gunicorn --bind 0.0.0.0:$PORT keep_alive:app
